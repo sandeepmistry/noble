@@ -56,27 +56,30 @@ describe('Characteristic', function() {
       mockNoble.read.calledWithExactly(mockPeripheralId, mockServiceUuid, mockUuid).should.equal(true);
     });
 
-    it('should callback', function() {
-      var calledback = false;
-
+    it('should callback', function(done) {
       characteristic.read(function() {
-        calledback = true;
+        done();
       });
       characteristic.emit('read');
-
-      calledback.should.equal(true);
     });
 
-    it('should callback with data', function() {
+    it('should callback with data', function(done) {
       var mockData = new Buffer(0);
-      var callbackData = null;
-
       characteristic.read(function(error, data) {
-        callbackData = data;
+        data.should.equal(mockData);
+        done();
       });
       characteristic.emit('read', mockData);
+    });
 
-      callbackData.should.equal(mockData);
+    it('should return a promise', function(done) {
+      var mockData = new Buffer(0);
+      const p = characteristic.read().then((data) => {
+        data.should.equal(mockData);
+        done();
+      });
+
+      characteristic.emit('read', mockData);
     });
   });
 
@@ -107,15 +110,16 @@ describe('Characteristic', function() {
       mockNoble.write.calledWithExactly(mockPeripheralId, mockServiceUuid, mockUuid, mockData, true).should.equal(true);
     });
 
-    it('should callback', function() {
-      var calledback = false;
-
+    it('should callback', function(done) {
       characteristic.write(mockData, true, function() {
-        calledback = true;
+        done();
       });
       characteristic.emit('write');
+    });
 
-      calledback.should.equal(true);
+    it('should return a promise', function(done) {
+      const p = characteristic.write(mockData, true).then(() => done());
+      characteristic.emit('write');
     });
   });
 
@@ -132,15 +136,16 @@ describe('Characteristic', function() {
       mockNoble.broadcast.calledWithExactly(mockPeripheralId, mockServiceUuid, mockUuid, false).should.equal(true);
     });
 
-    it('should callback', function() {
-      var calledback = false;
-
+    it('should callback', function(done) {
       characteristic.broadcast(true, function() {
-        calledback = true;
+        done();
       });
       characteristic.emit('broadcast');
+    });
 
-      calledback.should.equal(true);
+    it('should return a promise', function(done) {
+      const p = characteristic.broadcast(true).then(() => done());
+      characteristic.emit('broadcast');
     });
   });
 
@@ -157,15 +162,16 @@ describe('Characteristic', function() {
       mockNoble.notify.calledWithExactly(mockPeripheralId, mockServiceUuid, mockUuid, false).should.equal(true);
     });
 
-    it('should callback', function() {
-      var calledback = false;
-
+    it('should callback', function(done) {
       characteristic.notify(true, function() {
-        calledback = true;
+        done();
       });
       characteristic.emit('notify');
+    });
 
-      calledback.should.equal(true);
+    it('should return a promise', function(done) {
+      characteristic.notify(true).then(() => done());
+      characteristic.emit('notify');
     });
   });
 
@@ -176,15 +182,16 @@ describe('Characteristic', function() {
       mockNoble.notify.calledWithExactly(mockPeripheralId, mockServiceUuid, mockUuid, true).should.equal(true);
     });
 
-    it('should callback', function() {
-      var calledback = false;
-
+    it('should callback', function(done) {
       characteristic.subscribe(function() {
-        calledback = true;
+        done();
       });
       characteristic.emit('notify');
+    });
 
-      calledback.should.equal(true);
+    it('should return a promise', function(done) {
+      characteristic.subscribe().then(() => done());
+      characteristic.emit('notify');
     });
   });
 
@@ -195,15 +202,16 @@ describe('Characteristic', function() {
       mockNoble.notify.calledWithExactly(mockPeripheralId, mockServiceUuid, mockUuid, false).should.equal(true);
     });
 
-    it('should callback', function() {
-      var calledback = false;
-
+    it('should callback', function(done) {
       characteristic.unsubscribe(function() {
-        calledback = true;
+        done();
       });
       characteristic.emit('notify');
+    });
 
-      calledback.should.equal(true);
+    it('should return a promise', function(done) {
+      characteristic.unsubscribe().then(() => done());
+      characteristic.emit('notify');
     });
   });
 
@@ -214,27 +222,29 @@ describe('Characteristic', function() {
       mockNoble.discoverDescriptors.calledWithExactly(mockPeripheralId, mockServiceUuid, mockUuid).should.equal(true);
     });
 
-    it('should callback', function() {
-      var calledback = false;
-
+    it('should callback', function(done) {
       characteristic.discoverDescriptors(function() {
-        calledback = true;
+        done();
       });
       characteristic.emit('descriptorsDiscover');
-
-      calledback.should.equal(true);
     });
 
-    it('should callback with descriptors', function() {
+    it('should callback with descriptors', function(done) {
       var mockDescriptors = [];
-      var callbackDescriptors = null;
-
       characteristic.discoverDescriptors(function(error, descriptors) {
-        callbackDescriptors = descriptors;
+        descriptors.should.equal(mockDescriptors);
+        done();
       });
       characteristic.emit('descriptorsDiscover', mockDescriptors);
+    });
 
-      callbackDescriptors.should.equal(mockDescriptors);
+    it('should return a promise', function(done) {
+      var mockDescriptors = [];
+      characteristic.discoverDescriptors().then(function(descriptors) {
+        descriptors.should.equal(mockDescriptors);
+        done();
+      });
+      characteristic.emit('descriptorsDiscover', mockDescriptors);
     });
   });
 });

@@ -55,27 +55,29 @@ describe('service', function() {
       mockNoble.discoverIncludedServices.calledWithExactly(mockPeripheralId, mockUuid, mockUuids).should.equal(true);
     });
 
-    it('should callback', function() {
-      var calledback = false;
-
+    it('should callback', function(done) {
       service.discoverIncludedServices(null, function() {
-        calledback = true;
+        done();
       });
       service.emit('includedServicesDiscover');
-
-      calledback.should.equal(true);
     });
 
-    it('should callback with data', function() {
-      var mockIncludedServiceUuids = [];
-      var callbackIncludedServiceUuids = null;
-
+    it('should callback with data', function(done) {
+      const mockIncludedServiceUuids = [];
       service.discoverIncludedServices(null, function(error, includedServiceUuids) {
-        callbackIncludedServiceUuids = includedServiceUuids;
+        includedServiceUuids.should.equal(mockIncludedServiceUuids);
+        done();
       });
       service.emit('includedServicesDiscover', mockIncludedServiceUuids);
+    });
 
-      callbackIncludedServiceUuids.should.equal(mockIncludedServiceUuids);
+    it('should return a promise', function(done) {
+      const mockIncludedServiceUuids = [];
+      service.discoverIncludedServices(null).then(function(includedServiceUuids) {
+        includedServiceUuids.should.equal(mockIncludedServiceUuids);
+        done();
+      });
+      service.emit('includedServicesDiscover', mockIncludedServiceUuids);
     });
   });
 
@@ -87,34 +89,38 @@ describe('service', function() {
     });
 
     it('should delegate to noble, with uuids', function() {
-      var mockUuids = [];
+      const mockUuids = [];
 
       service.discoverCharacteristics(mockUuids);
 
       mockNoble.discoverCharacteristics.calledWithExactly(mockPeripheralId, mockUuid, mockUuids).should.equal(true);
     });
 
-    it('should callback', function() {
-      var calledback = false;
-
+    it('should callback', function(done) {
       service.discoverCharacteristics(null, function() {
-        calledback = true;
+        done();
       });
       service.emit('characteristicsDiscover');
-
-      calledback.should.equal(true);
     });
 
-    it('should callback with data', function() {
-      var mockCharacteristics = [];
-      var callbackCharacteristics = null;
+    it('should callback with data', function(done) {
+      const mockCharacteristics = [];
 
       service.discoverCharacteristics(null, function(error, mockCharacteristics) {
-        callbackCharacteristics = mockCharacteristics;
+        mockCharacteristics.should.equal(mockCharacteristics);
+        done();
       });
       service.emit('characteristicsDiscover', mockCharacteristics);
+    });
 
-      callbackCharacteristics.should.equal(mockCharacteristics);
+    it('should return a promise', function(done) {
+      const mockCharacteristics = [];
+
+      service.discoverCharacteristics(null).then(function(mockCharacteristics) {
+        mockCharacteristics.should.equal(mockCharacteristics);
+        done();
+      });
+      service.emit('characteristicsDiscover', mockCharacteristics);
     });
   });
 });
